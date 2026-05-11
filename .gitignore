@@ -1,0 +1,29 @@
+node_modules
+dist
+.DS_Store
+*.log
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+*.apk
+*.aab
+
+# Capacitor
+.capacitor/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量
+.env
+.env.local
+
+# 临时文件
+*.tmp
+Thumbs.db
