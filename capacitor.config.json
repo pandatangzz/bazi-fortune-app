@@ -1,5 +1,10 @@
 {
   "appId": "com.bazi.fortune",
   "appName": "八字命理",
-  "webDir": "dist"
+  "webDir": "dist",
+  "android": {
+    "buildOptions": {
+      "javaVersion": "17"
+    }
+  }
 }
