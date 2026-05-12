@@ -26,6 +26,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Set JAVA_HOME environment
+      run: |
+        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+        echo "org.gradle.java.home=$JAVA_HOME" >> android/gradle.properties
+
     - name: Install dependencies
       run: npm ci
 
