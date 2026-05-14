@@ -936,10 +936,16 @@ export default {
         const shishenDuanyu = ShishenDuanyu.getSizhuDuanyu(sizhuShishen);
         console.log('十神断语:', shishenDuanyu);
 
-        // 6. 使用增强的五行生克分析
-        const enhancedWuxingAnalysis = WuxingShengke.calculateWuxingStrength(bazi);
-        const enhancedRizhuStrength = WuxingShengke.judgeRizhuStrength(bazi, enhancedWuxingAnalysis);
-        const enhancedYongshen = WuxingShengke.calculateYongshen(bazi, enhancedRizhuStrength);
+        // 6. 使用增强的五行生克分析（需要转换格式）
+        const baziForWuxing = {
+          nianzhu: [bazi.year.gan, bazi.year.zhi],
+          yuezhu: [bazi.month.gan, bazi.month.zhi],
+          rizhu: [bazi.day.gan, bazi.day.zhi],
+          shizhu: [bazi.hour.gan, bazi.hour.zhi]
+        };
+        const enhancedWuxingAnalysis = WuxingShengke.calculateWuxingStrength(baziForWuxing);
+        const enhancedRizhuStrength = WuxingShengke.judgeRizhuStrength(baziForWuxing, enhancedWuxingAnalysis);
+        const enhancedYongshen = WuxingShengke.calculateYongshen(baziForWuxing, enhancedRizhuStrength);
         console.log('增强五行分析:', enhancedWuxingAnalysis);
         console.log('增强日主强弱:', enhancedRizhuStrength);
         console.log('增强用神:', enhancedYongshen);
