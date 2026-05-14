@@ -120,6 +120,9 @@
           <button class="tab" :class="{ active: activeTab === 'daily' }" @click="activeTab = 'daily'">
             日常事项测算
           </button>
+          <button class="tab" :class="{ active: activeTab === 'enhanced' }" @click="activeTab = 'enhanced'" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            增强算法 ⚡
+          </button>
         </div>
 
         <!-- 八字排盘 -->
@@ -652,6 +655,154 @@
             </div>
           </div>
         </div>
+
+        <!-- 增强算法展示 -->
+        <div v-if="activeTab === 'enhanced'" class="result-card">
+          <h3>增强算法系统 ⚡</h3>
+          <p style="color: #666; margin-bottom: 20px;">
+            从旧版 APP 提取的完整算法，包含 120 种格局判断、144 种神煞组合、36 条十神断语等
+          </p>
+
+          <!-- 十神断语系统 -->
+          <div v-if="result.enhanced && result.enhanced.shishenDuanyu" class="info-section">
+            <h4>📜 十神断语（四柱诗诀）</h4>
+            <div class="duanyu-grid">
+              <div class="duanyu-item">
+                <div class="duanyu-title">年柱 - {{ result.bazi.year.shishen || '比肩' }}</div>
+                <div class="duanyu-content">{{ result.enhanced.shishenDuanyu.年柱断语 }}</div>
+              </div>
+              <div class="duanyu-item">
+                <div class="duanyu-title">月柱 - {{ result.bazi.month.shishen || '比肩' }}</div>
+                <div class="duanyu-content">{{ result.enhanced.shishenDuanyu.月柱断语 }}</div>
+              </div>
+              <div class="duanyu-item">
+                <div class="duanyu-title">日柱 - 日主</div>
+                <div class="duanyu-content">{{ result.enhanced.shishenDuanyu.日柱断语 }}</div>
+              </div>
+              <div class="duanyu-item">
+                <div class="duanyu-title">时柱 - {{ result.bazi.hour.shishen || '比肩' }}</div>
+                <div class="duanyu-content">{{ result.enhanced.shishenDuanyu.时柱断语 }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 增强格局判断 -->
+          <div v-if="result.enhanced && result.enhanced.geju" class="info-section">
+            <h4>🎯 增强格局判断（120种组合）</h4>
+            <div class="enhanced-item">
+              <span class="label">格局名称：</span>
+              <span class="value highlight">{{ result.enhanced.geju }}</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">日主：</span>
+              <span class="value">{{ result.bazi.day.gan }}</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">月支：</span>
+              <span class="value">{{ result.bazi.month.zhi }}</span>
+            </div>
+          </div>
+
+          <!-- 增强神煞系统 -->
+          <div v-if="result.enhanced && result.enhanced.shensha" class="info-section">
+            <h4>✨ 增强神煞系统（144种组合）</h4>
+            <div class="shensha-grid">
+              <div v-for="(positions, shenshaName) in result.enhanced.shensha" :key="shenshaName" class="shensha-item">
+                <div class="shensha-name">{{ shenshaName }}</div>
+                <div class="shensha-positions">
+                  <span v-for="pos in positions" :key="pos" class="position-tag">{{ pos }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 增强五行分析 -->
+          <div v-if="result.enhanced && result.enhanced.wuxingAnalysis" class="info-section">
+            <h4>🌟 增强五行分析</h4>
+            <div class="wuxing-stats">
+              <div v-for="(count, wuxing) in result.enhanced.wuxingAnalysis.五行统计" :key="wuxing" class="wuxing-bar">
+                <span class="wuxing-label">{{ wuxing }}</span>
+                <div class="bar-container">
+                  <div class="bar-fill" :style="{ width: (count / 8 * 100) + '%' }"></div>
+                </div>
+                <span class="wuxing-count">{{ count }}</span>
+              </div>
+            </div>
+            <div class="enhanced-item" style="margin-top: 15px;">
+              <span class="label">日主强弱：</span>
+              <span class="value highlight">{{ result.enhanced.rizhuStrength.身强身弱 }}</span>
+              <span class="value" style="margin-left: 10px;">{{ result.enhanced.rizhuStrength.强弱程度 }}</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">用神：</span>
+              <span class="value highlight">{{ result.enhanced.yongshen.用神 }}</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">喜神：</span>
+              <span class="value">{{ result.enhanced.yongshen.喜神.join('、') }}</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">忌神：</span>
+              <span class="value">{{ result.enhanced.yongshen.忌神.join('、') }}</span>
+            </div>
+          </div>
+
+          <!-- 增强大运流年 -->
+          <div v-if="result.enhanced && result.enhanced.dayun" class="info-section">
+            <h4>🔮 增强大运计算</h4>
+            <div class="enhanced-item">
+              <span class="label">起运年龄：</span>
+              <span class="value">{{ result.enhanced.qiyunInfo.起运年龄 }}岁</span>
+            </div>
+            <div class="enhanced-item">
+              <span class="label">起运方向：</span>
+              <span class="value">{{ result.enhanced.qiyunInfo.顺逆 }}</span>
+            </div>
+            <div class="dayun-list">
+              <div v-for="(dayun, index) in result.enhanced.dayun.slice(0, 4)" :key="index" class="dayun-card">
+                <div class="dayun-ganzhi">{{ dayun.干支 }}</div>
+                <div class="dayun-age">{{ dayun.起始年龄 }}-{{ dayun.结束年龄 }}岁</div>
+                <div class="dayun-year">{{ dayun.起始年份 }}-{{ dayun.结束年份 }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 算法对比 -->
+          <div class="info-section">
+            <h4>📊 算法完整度对比</h4>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>功能模块</th>
+                  <th>原算法</th>
+                  <th>增强算法</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>格局判断</td>
+                  <td>简化版</td>
+                  <td style="color: #4caf50; font-weight: bold;">120种组合</td>
+                </tr>
+                <tr>
+                  <td>神煞系统</td>
+                  <td>部分</td>
+                  <td style="color: #4caf50; font-weight: bold;">144种组合</td>
+                </tr>
+                <tr>
+                  <td>十神断语</td>
+                  <td>无</td>
+                  <td style="color: #4caf50; font-weight: bold;">36条断语</td>
+                </tr>
+                <tr>
+                  <td>五行分析</td>
+                  <td>基础</td>
+                  <td style="color: #4caf50; font-weight: bold;">完整分析</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1025,3 +1176,204 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* 增强算法展示样式 */
+.duanyu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.duanyu-item {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+}
+
+.duanyu-title {
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.duanyu-content {
+  color: #333;
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.enhanced-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.enhanced-item:last-child {
+  border-bottom: none;
+}
+
+.enhanced-item .label {
+  font-weight: 600;
+  color: #666;
+  min-width: 100px;
+}
+
+.enhanced-item .value {
+  color: #333;
+}
+
+.enhanced-item .value.highlight {
+  color: #667eea;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.shensha-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.shensha-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.shensha-name {
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.shensha-positions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.position-tag {
+  background: #667eea;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.wuxing-stats {
+  margin-top: 15px;
+}
+
+.wuxing-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.wuxing-label {
+  min-width: 50px;
+  font-weight: 600;
+  color: #666;
+}
+
+.bar-container {
+  flex: 1;
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.wuxing-count {
+  min-width: 30px;
+  text-align: right;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.dayun-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.dayun-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.dayun-ganzhi {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.dayun-age {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.dayun-year {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.comparison-table {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.comparison-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #666;
+}
+
+.comparison-table tr:hover {
+  background: #f8f9fa;
+}
+
+.info-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.info-section h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 18px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+</style>
