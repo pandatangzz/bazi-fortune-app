@@ -17,16 +17,19 @@ export const DayunLiunianSystem = {
    * @returns {Object} 起运信息
    */
   calculateQiyunAge(bazi, gender, birthYear, birthMonth, birthDay) {
-    const { nianzhu, yuezhu } = bazi;
+    // 兼容两种数据结构
+    const niangan = bazi.nianzhu ? bazi.nianzhu[0] : bazi.year.gan;
+    const yuezhi = bazi.yuezhu ? bazi.yuezhu[1] : bazi.month.zhi;
 
     // 判断阴阳年（年干的阴阳）
-    const nianganIndex = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].indexOf(nianzhu[0]);
+    const nianganIndex = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].indexOf(niangan);
     const isYangYear = nianganIndex % 2 === 0; // 甲丙戊庚壬为阳
 
     // 顺逆判断
     // 阳年男命、阴年女命 → 顺行
     // 阴年男命、阳年女命 → 逆行
-    const isShunxing = (isYangYear && gender === '男') || (!isYangYear && gender === '女');
+    const isMale = gender === 1 || gender === '男';
+    const isShunxing = (isYangYear && isMale) || (!isYangYear && !isMale);
 
     // 计算到下一个节气的天数（简化算法）
     // 实际应该精确计算到节气的时间差
@@ -102,7 +105,10 @@ export const DayunLiunianSystem = {
    * @returns {Array} 八步大运数组
    */
   calculateBaDayun(bazi, qiyunInfo, birthYear) {
-    const { yuezhu } = bazi;
+    // 兼容两种数据结构
+    const yuegan = bazi.yuezhu ? bazi.yuezhu[0] : bazi.month.gan;
+    const yuezhi = bazi.yuezhu ? bazi.yuezhu[1] : bazi.month.zhi;
+
     const { 顺逆 } = qiyunInfo;
     const isShunxing = 顺逆 === '顺行';
 
@@ -111,8 +117,8 @@ export const DayunLiunianSystem = {
     const dizhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
     // 月柱的天干地支索引
-    let tianganIndex = tiangan.indexOf(yuezhu[0]);
-    let dizhiIndex = dizhi.indexOf(yuezhu[1]);
+    let tianganIndex = tiangan.indexOf(yuegan);
+    let dizhiIndex = dizhi.indexOf(yuezhi);
 
     // 计算8步大运
     for (let i = 0; i < 8; i++) {
