@@ -669,6 +669,14 @@ import { analyzeDailyMatter as analyzeMatter } from './core/daily-matter-enhance
 import { MATTER_CATEGORIES, suggestMatters, getSpecializedAnalysis } from './core/matter-templates.js';
 import { aiAssistant } from './core/ai-assistant.js';
 
+// 引入从旧版 APP 提取的增强算法模块
+import BaziDataEnhanced from './core/bazi-data-enhanced.js';
+import { judgeGeju } from './core/geju-enhanced.js';
+import ShenshaSystem from './core/shensha-system.js';
+import DayunLiunianSystem from './core/dayun-liunian-system.js';
+import ShishenDuanyu from './core/shishen-duanyu.js';
+import WuxingShengke from './core/wuxing-shengke.js';
+
 export default {
   name: 'App',
   data() {
@@ -874,6 +882,70 @@ export default {
         // 添加十神
         addShishenToBazi(bazi);
 
+        // ========== 增强算法整合 ==========
+
+        // 1. 使用增强的日柱计算验证
+        const enhancedRizhu = BaziDataEnhanced.calculateRizhu(
+          this.birthInfo.year,
+          this.birthInfo.month,
+          this.birthInfo.day
+        );
+        console.log('增强日柱计算:', enhancedRizhu, '原算法:', bazi.day.ganZhi);
+
+        // 2. 使用增强的格局判断
+        const shishenCount = {};
+        [bazi.year, bazi.month, bazi.hour].forEach(pillar => {
+          if (pillar.shishen) {
+            shishenCount[pillar.shishen] = (shishenCount[pillar.shishen] || 0) + 1;
+          }
+        });
+        const enhancedGeju = judgeGeju(bazi.day.gan, bazi.month.zhi, { shishenCount });
+        console.log('增强格局判断:', enhancedGeju);
+
+        // 3. 使用增强的神煞系统
+        const enhancedShensha = ShenshaSystem.calculateAllShensha({
+          nianzhu: [bazi.year.gan, bazi.year.zhi],
+          yuezhu: [bazi.month.gan, bazi.month.zhi],
+          rizhu: [bazi.day.gan, bazi.day.zhi],
+          shizhu: [bazi.hour.gan, bazi.hour.zhi]
+        });
+        console.log('增强神煞系统:', enhancedShensha);
+
+        // 4. 使用增强的大运流年计算
+        const qiyunInfo = DayunLiunianSystem.calculateQiyunAge(
+          bazi,
+          this.birthInfo.gender,
+          this.birthInfo.year,
+          this.birthInfo.month,
+          this.birthInfo.day
+        );
+        const enhancedDayun = DayunLiunianSystem.calculateBaDayun(
+          bazi,
+          qiyunInfo,
+          this.birthInfo.year
+        );
+        console.log('增强大运计算:', enhancedDayun);
+
+        // 5. 使用十神断语系统
+        const sizhuShishen = {
+          年柱: bazi.year.shishen || '比肩',
+          月柱: bazi.month.shishen || '比肩',
+          日柱: '日主',
+          时柱: bazi.hour.shishen || '比肩'
+        };
+        const shishenDuanyu = ShishenDuanyu.getSizhuDuanyu(sizhuShishen);
+        console.log('十神断语:', shishenDuanyu);
+
+        // 6. 使用增强的五行生克分析
+        const enhancedWuxingAnalysis = WuxingShengke.calculateWuxingStrength(bazi);
+        const enhancedRizhuStrength = WuxingShengke.judgeRizhuStrength(bazi, enhancedWuxingAnalysis);
+        const enhancedYongshen = WuxingShengke.calculateYongshen(bazi, enhancedRizhuStrength);
+        console.log('增强五行分析:', enhancedWuxingAnalysis);
+        console.log('增强日主强弱:', enhancedRizhuStrength);
+        console.log('增强用神:', enhancedYongshen);
+
+        // ========== 原有算法（保留兼容） ==========
+
         // 计算五行力量
         const wuxingPower = calculateWuxingPower(bazi);
         const wuxingStrength = analyzeWuxingStrength(wuxingPower);
@@ -916,10 +988,23 @@ export default {
           guiguzi,
           xingge,
           yunshi,
-          yijing
+          yijing,
+          // 增强算法结果
+          enhanced: {
+            rizhu: enhancedRizhu,
+            geju: enhancedGeju,
+            shensha: enhancedShensha,
+            dayun: enhancedDayun,
+            qiyunInfo: qiyunInfo,
+            shishenDuanyu: shishenDuanyu,
+            wuxingAnalysis: enhancedWuxingAnalysis,
+            rizhuStrength: enhancedRizhuStrength,
+            yongshen: enhancedYongshen
+          }
         };
 
         console.log('计算结果：', this.result);
+        console.log('========== 增强算法已整合 ==========');
       } catch (error) {
         alert('计算出错：' + error.message);
         console.error(error);
