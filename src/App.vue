@@ -749,7 +749,7 @@
 
           <!-- 增强大运流年 -->
           <div v-if="result.enhanced && result.enhanced.dayun" class="info-section">
-            <h4>🔮 增强大运计算</h4>
+            <h4>🔮 增强大运计算（八步大运完整展示）</h4>
             <div class="enhanced-item">
               <span class="label">起运年龄：</span>
               <span class="value">{{ result.enhanced.qiyunInfo.起运年龄 }}岁</span>
@@ -758,13 +758,39 @@
               <span class="label">起运方向：</span>
               <span class="value">{{ result.enhanced.qiyunInfo.顺逆 }}</span>
             </div>
-            <div class="dayun-list">
-              <div v-for="(dayun, index) in result.enhanced.dayun.slice(0, 4)" :key="index" class="dayun-card">
-                <div class="dayun-ganzhi">{{ dayun.干支 }}</div>
-                <div class="dayun-age">{{ dayun.起始年龄 }}-{{ dayun.结束年龄 }}岁</div>
-                <div class="dayun-year">{{ dayun.起始年份 }}-{{ dayun.结束年份 }}</div>
-              </div>
+            <div class="enhanced-item">
+              <span class="label">起运日期：</span>
+              <span class="value">{{ result.enhanced.qiyunInfo.起运日期 }}</span>
             </div>
+
+            <table class="dayun-table">
+              <thead>
+                <tr>
+                  <th>大运序号</th>
+                  <th>干支</th>
+                  <th>天干</th>
+                  <th>地支</th>
+                  <th>起始年龄</th>
+                  <th>结束年龄</th>
+                  <th>起始年份</th>
+                  <th>结束年份</th>
+                  <th>运程时长</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(dayun, index) in result.enhanced.dayun" :key="index">
+                  <td style="font-weight: bold; color: #667eea;">第{{ index + 1 }}步</td>
+                  <td style="font-weight: bold; font-size: 16px;">{{ dayun.干支 }}</td>
+                  <td>{{ dayun.天干 }}</td>
+                  <td>{{ dayun.地支 }}</td>
+                  <td>{{ dayun.起始年龄 }}岁</td>
+                  <td>{{ dayun.结束年龄 }}岁</td>
+                  <td>{{ dayun.起始年份 }}年</td>
+                  <td>{{ dayun.结束年份 }}年</td>
+                  <td>10年</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <!-- 算法对比 -->
@@ -1305,36 +1331,42 @@ export default {
   color: #667eea;
 }
 
-.dayun-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+.dayun-table {
+  width: 100%;
   margin-top: 15px;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.dayun-card {
+.dayun-table thead {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 15px;
-  border-radius: 10px;
+}
+
+.dayun-table th {
+  padding: 12px 10px;
   text-align: center;
-}
-
-.dayun-ganzhi {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.dayun-age {
+  font-weight: 600;
   font-size: 13px;
-  opacity: 0.9;
-  margin-bottom: 4px;
+  white-space: nowrap;
 }
 
-.dayun-year {
-  font-size: 12px;
-  opacity: 0.8;
+.dayun-table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+
+.dayun-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.dayun-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .comparison-table {
