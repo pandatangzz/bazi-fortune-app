@@ -1,6 +1,6 @@
 {
-  "appId": "com.bazi.fortune",
-  "appName": "八字命理",
+  "appId": "com.xuankong.fengshui",
+  "appName": "玄空风水",
   "webDir": "dist",
   "android": {
     "buildOptions": {

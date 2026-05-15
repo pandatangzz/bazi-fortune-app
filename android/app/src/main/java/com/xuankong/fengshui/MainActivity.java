@@ -1,4 +1,4 @@
-package com.bazi.fortune;
+package com.xuankong.fengshui;
 
 import com.getcapacitor.BridgeActivity;
 

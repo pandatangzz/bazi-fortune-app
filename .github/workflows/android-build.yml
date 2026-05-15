@@ -1,10 +1,10 @@
-name: Build Android APK
+name: Android Build
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -18,34 +18,29 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22'
+        node-version: '18'
+        cache: 'npm'
 
-    - name: Setup Java JDK
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Set JAVA_HOME environment
-      run: |
-        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-        echo "org.gradle.java.home=$JAVA_HOME" >> android/gradle.properties
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
 
     - name: Install dependencies
       run: npm ci
 
-    - name: Build web app
+    - name: Build web assets
       run: npm run build
+
+    - name: Copy xuankong.html to index.html
+      run: cp dist/xuankong.html dist/index.html
 
     - name: Sync Capacitor
       run: npx cap sync android
-
-    - name: Fix all Java versions to 17 (after sync)
-      run: |
-        find android -name "*.gradle" -type f -exec sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' {} \;
-        find android -name "*.gradle" -type f -exec sed -i 's/VERSION_21/VERSION_17/g' {} \;
-        find node_modules/@capacitor -name "*.gradle" -type f -exec sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' {} \;
-        find node_modules/@capacitor -name "*.gradle" -type f -exec sed -i 's/VERSION_21/VERSION_17/g' {} \;
 
     - name: Build Android APK
       run: |
@@ -58,15 +53,4 @@ jobs:
       with:
         name: app-debug
         path: android/app/build/outputs/apk/debug/app-debug.apk
-
-    - name: Create Release
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: Release v1.0.${{ github.run_number }}
-        files: android/app/build/outputs/apk/debug/app-debug.apk
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        retention-days: 30
